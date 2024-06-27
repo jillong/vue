@@ -1,12 +1,24 @@
+import {ChatDotRound, Setting} from "@element-plus/icons-vue";
+
 let routes = [
     {
-        path: "/settings",
-        name: "settings",
+        path: "/setting",
+        name: "setting",
         component: () => import("@/view/chat/SettingView.vue"),
         meta: {
             isMenu: true,
             description: "设置",
-            icon: "Setting",
+            icon: Setting,
+        },
+    },
+    {
+        path: "/chat",
+        name: "chat",
+        component: () => import("@/view/chat/ChatView.vue"),
+        meta: {
+            isMenu: true,
+            description: "AI对话",
+            icon: ChatDotRound,
         },
     }
 ];
