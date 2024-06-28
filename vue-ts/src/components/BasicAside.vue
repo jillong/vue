@@ -1,31 +1,31 @@
 <template>
   <div id="basic-aside">
     <el-menu
-      :default-active="defaultPath"
-      class="aside-menu"
-      :collapse="isCollapse"
-      background-color="#324157"
-      text-color="#bfcbd9"
-      active-text-color="#20a0ff"
+        :default-active="defaultPath"
+        class="aside-menu"
+        :collapse="isCollapse"
+        background-color="#324157"
+        text-color="#bfcbd9"
+        active-text-color="#20a0ff"
     >
       <div class="menu-header">
         <el-icon size="50">
-          <el-image :src="logo" />
+          <el-image :src="logo"/>
         </el-icon>
         <h1>Spring AI</h1>
         <el-text style="color: #bfd9c4">
           基于数据增强的AI对话
         </el-text>
       </div>
-      <el-divider />
+      <el-divider/>
       <el-menu-item
-        v-for="item in menuRouterList"
-        :key="item.path"
-        :index="item.path"
-        @click="handleSelect(item)"
+          v-for="item in menuRouterList"
+          :key="item.path"
+          :index="item.path"
+          @click="handleSelect(item)"
       >
         <el-icon>
-          <component :is="item.meta?.icon" />
+          <component :is="item.meta?.icon"/>
         </el-icon>
         <template #title>
           {{ item.meta?.description }}
@@ -35,12 +35,12 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 
-import {ref, computed, onMounted} from "vue";
-import logo from "@/assets/logo.svg";
-import routes from "@/router/config.js";
-import router from "@/router";
+import {computed, onMounted, ref} from "vue";
+import logo from '../assets/logo.svg';
+import routes from "../router/config";
+import router from "../router/index";
 
 const isCollapse = ref(false);
 const path = router.currentRoute.value.fullPath;
@@ -61,7 +61,7 @@ onMounted(() => {
   console.log(defaultPath.value);
 });
 
-const handleSelect = (e) => {
+const handleSelect = (e: any) => {
   console.log(e);
   router.push({
     path: e.path,

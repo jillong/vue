@@ -2,30 +2,21 @@
   <div id="basic-layout">
     <el-container>
       <el-aside :style="asideStyle">
-        <BasicAside @change-aside="changeAside" />
+        <BasicAside />
       </el-aside>
-      <el-main style="margin-left: 10px; background-color: #f3f3f3">
+      <el-main style="margin-left: 10px; background-color: #f3f3f3;">
         <RouterView />
       </el-main>
     </el-container>
   </div>
-  <router-view></router-view>
 </template>
 
-<script setup>
-
+<script setup lang="ts">
 import {ref} from "vue";
-// 创建一个响应式变量
+import BasicAside from "./components/BasicAside.vue";
+
 const asideStyle = ref({ width: "200px" });
 
-const changeAside = (isCollapse) => {
-  if (isCollapse) {
-    asideStyle.value.width = "auto";
-  } else {
-    // 动态变到150px
-    asideStyle.value.width = "200px";
-  }
-};
 </script>
 
 <style scoped lang="less">
