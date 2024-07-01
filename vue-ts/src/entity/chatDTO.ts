@@ -16,3 +16,11 @@ export interface ChatDTO {
     chatOptions: ChatOptions;
     query: string;
 }
+
+export interface AddChatApiDto {
+    id: string;
+    status: boolean;
+    baseUrl: string;
+    apiKey: string;
+    description: string;
+}

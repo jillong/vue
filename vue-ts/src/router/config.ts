@@ -1,4 +1,4 @@
-import {ChatDotRound, Setting} from "@element-plus/icons-vue";
+import {ChatDotRound, Key, Setting} from "@element-plus/icons-vue";
 
 let routes = [
     {
@@ -20,7 +20,17 @@ let routes = [
             description: "AI对话",
             icon: ChatDotRound,
         },
-    }
+    },
+    {
+        path: "/manage",
+        name: "manage",
+        component: () => import("../view/manage/ApiManageView.vue"),
+        meta: {
+            isMenu: true,
+            description: "api key管理",
+            icon: Key,
+        },
+    },
 ];
 
 export default routes;
