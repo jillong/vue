@@ -1,6 +1,6 @@
 <template>
   <div id="basic-layout">
-    <el-container>
+    <el-container style="height: 99vh;">
       <el-aside :style="asideStyle">
         <BasicAside />
       </el-aside>
@@ -22,5 +22,6 @@ const asideStyle = ref({ width: "200px" });
 <style scoped lang="less">
 #basic-layout {
   margin: 10px;
+  height: calc(100vh - 20px); /* 减去上下边距 */
 }
 </style>

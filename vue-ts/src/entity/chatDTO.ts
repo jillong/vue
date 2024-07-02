@@ -26,6 +26,7 @@ export interface AddChatApiDto {
 }
 
 export interface UpdateChatApiDto {
+    id: string;
     status: boolean;
     baseUrl: string;
     apiKey: string;

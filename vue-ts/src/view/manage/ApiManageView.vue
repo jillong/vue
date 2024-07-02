@@ -7,17 +7,13 @@
         <span style="margin-right: 50px;"></span>
         <el-input
             v-model="searchQuery"
-            placeholder="搜索..."
+            placeholder="暂未实现"
             prefix-icon="el-icon-search"
             @input="handleSearch"
             style="width: 200px"
         />
       </div>
-      <div class="header-right">
-        <el-button type="primary" @click="insertDialogVisible = true">
-          添加API
-        </el-button>
-      </div>
+      <div class="header-right"><el-button type="primary" @click="openDialog">添加API</el-button></div>
     </div>
     <!-- 灰色的区分线 -->
     <div class="divider"></div>
@@ -37,40 +33,51 @@
           />
         </template>
       </el-table-column>
+      <el-table-column align="left">
+        <template #header>
+          <span style="width: 132px; display: inline-block;">操作</span>
+        </template>
+        <template #default="scope">
+          <div>
+            <el-button type="primary" size="default" @click="openDialog(scope.row)">编辑</el-button>
+            <el-button type="danger" size="default" class="delete-btn">删除</el-button>
+          </div>
+        </template>
+      </el-table-column>
     </el-table>
 
     <!-- 添加 API 对话框 -->
     <el-dialog
-        title="添加 API"
-        v-model="insertDialogVisible"
+        :title="isEditing ? '编辑 API' : '添加 API'"
+        v-model="dialogVisible"
         width="35%"
         @close="resetForm"
     >
       <el-form
-          :model="insertForm"
+          :model="form"
           :rules="insertFormRules"
           label-width="100px"
       >
         <el-form-item label="Id" prop="id" required>
-          <el-input v-model="insertForm.id" placeholder="id"/>
+          <el-input v-model="form.id" placeholder="id"/>
         </el-form-item>
         <el-form-item label="ApiKey" prop="apiKey" required>
-          <el-input v-model="insertForm.apiKey"/>
+          <el-input v-model="form.apiKey"/>
         </el-form-item>
         <el-form-item label="BaseUrl" prop="baseUrl" required>
-          <el-input v-model="insertForm.baseUrl"/>
+          <el-input v-model="form.baseUrl"/>
         </el-form-item>
         <el-form-item label="Description">
-          <el-input v-model="insertForm.description"/>
+          <el-input v-model="form.description"/>
         </el-form-item>
         <el-form-item label="Status">
-          <el-switch v-model="insertForm.status"/>
+          <el-switch v-model="form.status"/>
         </el-form-item>
       </el-form>
 
       <template #footer>
-        <el-button @click="insertDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="chatApiCreate">保存</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="save">保存</el-button>
       </template>
     </el-dialog>
   </div>
@@ -83,9 +90,43 @@ import {AddChatApiDto, UpdateChatApiDto} from "@/entity/chatDTO";
 
 const data = ref([])
 const loading = ref(true)
+const isEditing = ref(false)
 const searchQuery = ref('');
-const insertDialogVisible = ref(false)
-const insertForm = ref<AddChatApiDto>(<AddChatApiDto>{status: false})
+const dialogVisible = ref(false)
+const form = ref<AddChatApiDto | UpdateChatApiDto>(<AddChatApiDto>{status: false})
+
+const openDialog = (row?: UpdateChatApiDto) => {
+  if (row) {
+    // 打开编辑对话框
+    form.value = {...row}
+    isEditing.value = true
+  } else {
+    // 打开添加对话框
+    form.value = <AddChatApiDto>{status: false}
+    isEditing.value = false
+  }
+  dialogVisible.value = true
+}
+
+const save = async () => {
+  if (isEditing.value) {
+    await updateChatApi(form.value as UpdateChatApiDto)
+  } else {
+    await addChatApi(form.value as AddChatApiDto)
+  }
+  await chatApiGet()
+  dialogVisible.value = false
+}
+
+const chatApiGet = async () => {
+  const res = await getChatApi()
+  console.log(res)
+  data.value = res.data
+}
+const chatApiUpdate = (updateChatApiDto: UpdateChatApiDto) => {
+  updateChatApi(updateChatApiDto);
+  chatApiGet();
+}
 
 const handleSearch = () => {
   // 这里可以添加搜索逻辑
@@ -99,20 +140,6 @@ const insertFormRules = ref({
     {required: true, message: '请输入 BaseUrl', trigger: 'blur'},
   ],
 });
-const chatApiGet = async () => {
-  const res = await getChatApi()
-  console.log(res)
-  data.value = res.data
-}
-const chatApiUpdate = (updateChatApiDto: UpdateChatApiDto) => {
-  updateChatApi(updateChatApiDto);
-  chatApiGet();
-}
-const chatApiCreate = async () => {
-  await addChatApi(insertForm.value)
-  await chatApiGet()
-  insertDialogVisible.value = false
-}
 
 // 重置表单数据
 const resetForm = () => {
@@ -130,6 +157,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+
 .header {
   display: flex;
   justify-content: space-between;
