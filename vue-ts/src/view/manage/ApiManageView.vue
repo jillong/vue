@@ -1,44 +1,161 @@
 <template>
   <div>
+    <!-- 上半部分：添加API 和 搜索框 -->
+    <div class="header">
+      <div class="header-left">
+        <span>调用API管理</span>
+        <span style="margin-right: 50px;"></span>
+        <el-input
+            v-model="searchQuery"
+            placeholder="搜索..."
+            prefix-icon="el-icon-search"
+            @input="handleSearch"
+            style="width: 200px"
+        />
+      </div>
+      <div class="header-right">
+        <el-button type="primary" @click="insertDialogVisible = true">
+          添加API
+        </el-button>
+      </div>
+    </div>
+    <!-- 灰色的区分线 -->
+    <div class="divider"></div>
+
     <el-table class="table" table-layout="auto" border :data="data" v-loading="loading">
-      <el-table-column prop="id" label="id"/>
-      <el-table-column prop="status" label="status"/>
-      <el-table-column prop="apiKey" label="apiKey"/>
-      <el-table-column prop="baseUrl" label="baseUrl"/>
-      <el-table-column prop="description" label="description"/>
-      <el-table-column align="right">
-        <template #header>
-          <el-button
-              style="width: 132px"
-              type="primary"
-              size="default"
-              @click="insertDialogVisible = true"
-          >添加API
-          </el-button
-          >
+      <el-table-column prop="id" label="Id"/>
+      <el-table-column prop="apiKey" label="ApiKey"/>
+      <el-table-column prop="baseUrl" label="BaseUrl"/>
+      <el-table-column prop="description" label="Description"/>
+      <el-table-column prop="status" label="Status">
+        <template v-slot="scope">
+          <el-switch
+              v-model="scope.row.status"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              @change="()=> chatApiUpdate(scope.row)"
+          />
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- 添加 API 对话框 -->
+    <el-dialog
+        title="添加 API"
+        v-model="insertDialogVisible"
+        width="35%"
+        @close="resetForm"
+    >
+      <el-form
+          :model="insertForm"
+          :rules="insertFormRules"
+          label-width="100px"
+      >
+        <el-form-item label="Id" prop="id" required>
+          <el-input v-model="insertForm.id" placeholder="id"/>
+        </el-form-item>
+        <el-form-item label="ApiKey" prop="apiKey" required>
+          <el-input v-model="insertForm.apiKey"/>
+        </el-form-item>
+        <el-form-item label="BaseUrl" prop="baseUrl" required>
+          <el-input v-model="insertForm.baseUrl"/>
+        </el-form-item>
+        <el-form-item label="Description">
+          <el-input v-model="insertForm.description"/>
+        </el-form-item>
+        <el-form-item label="Status">
+          <el-switch v-model="insertForm.status"/>
+        </el-form-item>
+      </el-form>
+
+      <template #footer>
+        <el-button @click="insertDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="chatApiCreate">保存</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
-import {getChatApi} from "@/api/ChatApi";
+import {addChatApi, getChatApi, updateChatApi} from "@/api/ChatApi";
+import {AddChatApiDto, UpdateChatApiDto} from "@/entity/chatDTO";
 
 const data = ref([])
 const loading = ref(true)
+const searchQuery = ref('');
 const insertDialogVisible = ref(false)
+const insertForm = ref<AddChatApiDto>(<AddChatApiDto>{status: false})
 
-const getData = async () => {
+const handleSearch = () => {
+  // 这里可以添加搜索逻辑
+};
+// 表单验证规则
+const insertFormRules = ref({
+  apiKey: [
+    {required: true, message: '请输入 ApiKey', trigger: 'blur'},
+  ],
+  baseUrl: [
+    {required: true, message: '请输入 BaseUrl', trigger: 'blur'},
+  ],
+});
+const chatApiGet = async () => {
   const res = await getChatApi()
   console.log(res)
   data.value = res.data
 }
+const chatApiUpdate = (updateChatApiDto: UpdateChatApiDto) => {
+  updateChatApi(updateChatApiDto);
+  chatApiGet();
+}
+const chatApiCreate = async () => {
+  await addChatApi(insertForm.value)
+  await chatApiGet()
+  insertDialogVisible.value = false
+}
 
+// 重置表单数据
+const resetForm = () => {
+  ref<AddChatApiDto>(<AddChatApiDto>{status: false})
+};
+
+/**
+ * onMounted() 钩子函数：可以在组件挂载到 DOM 后执行各种操作，如数据获取、DOM 操作和初始化任务
+ */
 onMounted(async () => {
-  await getData()
+  await chatApiGet()
   loading.value = false
 })
 
 </script>
+
+<style scoped>
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  margin-right: 100px;
+}
+
+.header-right {
+  /* 调整 header-right 的布局 */
+  display: flex;
+  align-items: center;
+}
+
+.divider {
+  height: 1px;
+  background-color: #d3d3d3;
+  margin: 10px 0;
+}
+
+.table {
+  width: 100%;
+}
+</style>

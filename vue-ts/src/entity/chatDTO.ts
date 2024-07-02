@@ -24,3 +24,10 @@ export interface AddChatApiDto {
     apiKey: string;
     description: string;
 }
+
+export interface UpdateChatApiDto {
+    status: boolean;
+    baseUrl: string;
+    apiKey: string;
+    description: string;
+}
