@@ -42,13 +42,13 @@
         <template #default="scope">
           <div>
             <el-button type="primary" size="default" @click="openDialog(scope.row)">编辑</el-button>
-            <el-button type="danger" size="default" @click="chatApiDelete(scope.row.id)">删除</el-button>
+            <el-button type="danger" size="default" @click="handleDelete(scope.row.id)">删除</el-button>
           </div>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- 添加 API 对话框 -->
+    <!-- 添加或编辑 API 对话框 -->
     <el-dialog
         :title="isEditing ? '编辑 API' : '添加 API'"
         v-model="dialogVisible"
@@ -82,6 +82,23 @@
         <el-button type="primary" @click="save">保存</el-button>
       </template>
     </el-dialog>
+
+    <!--  删除 api 对话框 -->
+    <el-dialog
+        class="deleteDialog"
+        v-model="deleteDialogVisible"
+        title="删除API"
+        width="400px"
+        align-center
+    >
+      <span>确定删除该API？</span>
+      <template #footer>
+        <span class="dialogFooter">
+          <el-button type="primary" size="large" @click="chatApiDelete">确定</el-button>
+          <el-button size="large" @click="deleteDialogVisible = false">取消</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -91,10 +108,12 @@ import {addChatApi, deleteChatApi, getChatApi, updateChatApi} from "@/api/ChatAp
 import {AddChatApiDto, UpdateChatApiDto} from "@/entity/chatDTO";
 
 const data = ref([])
+const deleteId = ref<string>()
 const loading = ref(true)
 const isEditing = ref(false)
 const searchQuery = ref('');
 const dialogVisible = ref(false)
+const deleteDialogVisible = ref<boolean>(false)
 const form = ref<AddChatApiDto | UpdateChatApiDto>(<AddChatApiDto>{status: false})
 
 const openDialog = (row?: UpdateChatApiDto) => {
@@ -108,6 +127,11 @@ const openDialog = (row?: UpdateChatApiDto) => {
     isEditing.value = false
   }
   dialogVisible.value = true
+}
+
+const handleDelete = async (id: string) => {
+  deleteId.value = id
+  deleteDialogVisible.value = true
 }
 
 const save = async () => {
@@ -149,10 +173,11 @@ const chatApiUpdate = async (updateChatApiDto: UpdateChatApiDto) => {
 
 }
 
-const chatApiDelete = async (id: string) => {
+const chatApiDelete = async () => {
   try {
-    await deleteChatApi(id);
+    await deleteChatApi(deleteId.value);
     await chatApiGet();
+    deleteDialogVisible.value = false
   } catch (error) {
     console.error('删除失败:', error);
   }
