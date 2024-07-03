@@ -13,7 +13,7 @@
             style="width: 200px"
         />
       </div>
-      <div class="header-right"><el-button type="primary" @click="openDialog">添加API</el-button></div>
+      <div class="header-right"><el-button type="primary" @click="openDialog()">添加API</el-button></div>
     </div>
     <!-- 灰色的区分线 -->
     <div class="divider"></div>
