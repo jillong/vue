@@ -61,19 +61,19 @@
           label-width="100px"
       >
         <el-form-item label="Id" prop="id" required>
-          <el-input v-model="form.id" placeholder="id"/>
+          <el-input v-model.trim="form.id" placeholder="id"/>
         </el-form-item>
         <el-form-item label="ApiKey" prop="apiKey" required>
-          <el-input v-model="form.apiKey"/>
+          <el-input v-model.trim="form.apiKey"/>
         </el-form-item>
         <el-form-item label="BaseUrl" prop="baseUrl" required>
-          <el-input v-model="form.baseUrl"/>
+          <el-input v-model.trim="form.baseUrl"/>
         </el-form-item>
         <el-form-item label="Description">
-          <el-input v-model="form.description"/>
+          <el-input v-model.trim="form.description"/>
         </el-form-item>
         <el-form-item label="Status">
-          <el-switch v-model="form.status"/>
+          <el-switch v-model.trim="form.status"/>
         </el-form-item>
       </el-form>
 
