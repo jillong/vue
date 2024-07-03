@@ -175,7 +175,7 @@ const chatApiUpdate = async (updateChatApiDto: UpdateChatApiDto) => {
 
 const chatApiDelete = async () => {
   try {
-    await deleteChatApi(deleteId.value);
+    await deleteChatApi(deleteId.value as string);
     await chatApiGet();
     deleteDialogVisible.value = false
   } catch (error) {
