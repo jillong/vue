@@ -13,7 +13,9 @@
             style="width: 200px"
         />
       </div>
-      <div class="header-right"><el-button type="primary" @click="openDialog()">添加API</el-button></div>
+      <div class="header-right">
+        <el-button type="primary" @click="openDialog()">添加API</el-button>
+      </div>
     </div>
     <!-- 灰色的区分线 -->
     <div class="divider"></div>
@@ -40,7 +42,7 @@
         <template #default="scope">
           <div>
             <el-button type="primary" size="default" @click="openDialog(scope.row)">编辑</el-button>
-            <el-button type="danger" size="default" class="delete-btn">删除</el-button>
+            <el-button type="danger" size="default" @click="chatApiDelete(scope.row.id)">删除</el-button>
           </div>
         </template>
       </el-table-column>
@@ -85,7 +87,7 @@
 
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
-import {addChatApi, getChatApi, updateChatApi} from "@/api/ChatApi";
+import {addChatApi, deleteChatApi, getChatApi, updateChatApi} from "@/api/ChatApi";
 import {AddChatApiDto, UpdateChatApiDto} from "@/entity/chatDTO";
 
 const data = ref([])
@@ -110,22 +112,51 @@ const openDialog = (row?: UpdateChatApiDto) => {
 
 const save = async () => {
   if (isEditing.value) {
-    await updateChatApi(form.value as UpdateChatApiDto)
+    try {
+      await updateChatApi(form.value as UpdateChatApiDto)
+    } catch (error) {
+      console.error('更新失败:', error);
+    }
+
   } else {
-    await addChatApi(form.value as AddChatApiDto)
+    try {
+      await addChatApi(form.value as AddChatApiDto)
+    } catch (error) {
+      console.error('添加失败:', error);
+    }
+
   }
   await chatApiGet()
   dialogVisible.value = false
 }
 
 const chatApiGet = async () => {
-  const res = await getChatApi()
-  console.log(res)
-  data.value = res.data
+  try {
+    const res = await getChatApi()
+    data.value = res.data
+  } catch (error) {
+    console.error('查询失败：', error)
+  }
+
 }
-const chatApiUpdate = (updateChatApiDto: UpdateChatApiDto) => {
-  updateChatApi(updateChatApiDto);
-  chatApiGet();
+const chatApiUpdate = async (updateChatApiDto: UpdateChatApiDto) => {
+  try {
+    await updateChatApi(updateChatApiDto);
+    await chatApiGet();
+  } catch (error) {
+    console.error('更新失败:', error);
+  }
+
+}
+
+const chatApiDelete = async (id: string) => {
+  try {
+    await deleteChatApi(id);
+    await chatApiGet();
+  } catch (error) {
+    console.error('删除失败:', error);
+  }
+
 }
 
 const handleSearch = () => {
