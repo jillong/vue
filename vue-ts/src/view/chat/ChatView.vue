@@ -1,18 +1,21 @@
 <template>
   <div id="basic-aside">
-    <el-scrollbar
-        ref="myScrollbar"
-        always
-    >
+    <el-scrollbar ref="myScrollbar" always>
       <div v-highlight ref="innerElement">
-        <el-card v-for="(item, index) in messageList" class="scrollbar-item">
-          <div class="card-header" v-if="item.role === 'system'">
-            <el-image :src="User" style="width: 50px; margin-right: 20px"/>
-            <span style="font-size: large; font-weight: 800">系统设置</span>
-          </div>
-          <div style="margin: 10px">
-            <MDView v-if="item.content !== ''" :content="item.content"/>
-            <div v-else>AI思考中...</div>
+        <el-card
+            v-for="(item, index) in messageList"
+            :key="index"
+            :class="['scrollbar-item', item.role]"
+        >
+          <div class="card-content">
+            <div class="card-header" v-if="item.role === 'system'">
+              <el-image :src="User" style="width: 50px; margin-right: 20px" />
+              <span style="font-size: large; font-weight: 800">系统设置</span>
+            </div>
+            <div v-else class="message-content">
+              <MDView v-if="item.content !== ''" :content="item.content" />
+              <div v-else>AI思考中...</div>
+            </div>
           </div>
         </el-card>
       </div>
@@ -28,7 +31,7 @@
           placeholder="请输入对话内容，发送请使用Shift+Enter"
           class="input-box"
       />
-      <div style="display: flex; justify-content: right; margin: 10px">
+      <div class="button-group">
         <el-button type="primary" @click="submitChat">发送</el-button>
         <el-button type="warning" @click="cleanMessage">删除对话</el-button>
       </div>
@@ -42,11 +45,11 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from 'vue';
+import { computed, ref } from 'vue';
 import User from "../../assets/user.svg";
-import {ElMessage, ElScrollbar} from "element-plus";
-import {sendChatRequest, sendMessageChat} from "@/api/ChatApi";
-import {chatMessagesStore} from "@/store/message";
+import { ElMessage, ElScrollbar } from "element-plus";
+import { sendChatRequest, sendMessageChat } from "@/api/ChatApi";
+import { chatMessagesStore } from "@/store/message";
 import MDView from "@/components/MDView.vue";
 
 const innerElement = ref<HTMLElement>();
@@ -63,6 +66,7 @@ const messageList = computed(() => {
 const cleanMessage = () => {
   chatMessages.resetGlobalMessage();
 };
+
 const submitChatStream = () => {
   if (userQuery.value === "") {
     ElMessage({
@@ -74,8 +78,8 @@ const submitChatStream = () => {
     sendMessageChat(userQuery.value);
     userQuery.value = "";
   }
-
 };
+
 const submitChat = async () => {
   if (userQuery.value === "") {
     ElMessage({
@@ -91,23 +95,65 @@ const submitChat = async () => {
     });
     userQuery.value = "";
   }
-}
-
+};
 </script>
 
 <style>
-.chat-footer {
-  background-color: transparent;
-  width: 100%;
-  border-top: 2px solid #cecccc;
-  display: flex;
-  flex-direction: column; /* 垂直方向排列 */
-  align-items: flex-end; /* 开始位置对齐 */
-}
-
 #basic-aside {
   display: flex;
   flex-direction: column; /* 垂直方向排列 */
   height: 100%;
+}
+
+.chat-footer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-top: 2px solid #cecccc;
+  padding: 10px;
+  background-color: transparent;
+}
+
+.input-box {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.button-group {
+  display: flex;
+  align-items: center;
+}
+
+.button-group .el-button {
+  margin-right: 10px;
+}
+
+.button-group .el-button:last-child {
+  margin-right: 0;
+}
+
+.scrollbar-item {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.scrollbar-item.assistant .card-content {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.scrollbar-item.user .card-content {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.scrollbar-item.system .card-content {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.message-content {
+  max-width: 60%;
 }
 </style>
