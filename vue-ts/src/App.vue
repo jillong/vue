@@ -4,7 +4,7 @@
       <el-aside :style="asideStyle">
         <BasicAside />
       </el-aside>
-      <el-main style="margin-left: 10px; background-color: #f3f3f3;">
+      <el-main style="margin-left: 10px; background-color: #ffffff;">
         <RouterView />
       </el-main>
     </el-container>
@@ -15,7 +15,7 @@
 import {ref} from "vue";
 import BasicAside from "./components/BasicAside.vue";
 
-const asideStyle = ref({ width: "200px" });
+const asideStyle = ref({ width: "300px" });
 
 </script>
 

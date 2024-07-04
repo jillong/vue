@@ -2,7 +2,7 @@
   <div id="basic-aside">
     <el-scrollbar ref="myScrollbar" always>
       <div v-highlight ref="innerElement">
-        <el-card
+        <div
             v-for="(item, index) in messageList"
             :key="index"
             :class="['scrollbar-item', item.role]"
@@ -17,7 +17,7 @@
               <div v-else>AI思考中...</div>
             </div>
           </div>
-        </el-card>
+        </div>
       </div>
     </el-scrollbar>
 
@@ -103,6 +103,7 @@ const submitChat = async () => {
   display: flex;
   flex-direction: column; /* 垂直方向排列 */
   height: 100%;
+  padding: 0 20%; /* 为整个容器增加左右留白 */
 }
 
 .chat-footer {
@@ -136,24 +137,38 @@ const submitChat = async () => {
   margin: 10px 0;
   padding: 10px;
   border-radius: 10px;
+  display: flex;
+  justify-content: flex-end; /* 使消息框靠右对齐 */
 }
 
-.scrollbar-item.assistant .card-content {
-  display: flex;
-  justify-content: flex-start;
+.scrollbar-item.assistant {
+  justify-content: flex-start; /* 使 assistant 消息框靠左对齐 */
 }
 
-.scrollbar-item.user .card-content {
-  display: flex;
-  justify-content: flex-end;
+.scrollbar-item.user {
+  justify-content: flex-end; /* 使 user 消息框靠右对齐 */
 }
 
-.scrollbar-item.system .card-content {
-  display: flex;
-  justify-content: flex-start;
+.card-content {
+  max-width: 100%;
+  background-color: #f5f5f5; /* 设置消息框背景色 */
+  padding: 10px;
+  border-radius: 10px;
 }
 
 .message-content {
-  max-width: 60%;
+  word-wrap: break-word;
 }
+
+.scrollbar-item.assistant .card-content {
+  background-color: rgba(247, 247, 250, 0.84); /* 设置 assistant 消息框背景色 */
+  text-align: left;
+}
+
+.scrollbar-item.user .card-content {
+  background-color: #fff2e8; /* 设置 user 消息框背景色 */
+  text-align: right;
+}
+
+
 </style>
