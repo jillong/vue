@@ -1,47 +1,66 @@
-import {ChatOptions} from "@/entity/chatDTO"
+import {chatOptionsStore} from "@/store/options";
+import {Message} from "@/entity/chatDTO";
 import {defineStore} from "pinia";
 
-export const defaultChatOptions: ChatOptions = {
-    model: "gpt-3.5-turbo",
-    maxHistoryLength: 10,
-    augmented: false,
-    temperature: 0.5,
-    stream: false,
-};
-export const CHAT_OPTION_KEY = "chat option key"
-export const SYSTEM_PROMPT_KEY = "system prompt key";
-let defaultSystemPrompt = "你是一名AI助手，致力于帮助人们解决问题.";
-defineStore("options", {
+const optionsStore = chatOptionsStore();
+const defaultMessage: Message[] = [
+    {
+        role: "system",
+        content: optionsStore.getGlobalSystemPrompt,
+    },
+];
+
+export const MESSAGE_LOCAL_STORE = "local message key";
+
+export const chatMessagesStore = defineStore("message", {
     state: () => {
-        let chatOption: string | null = localStorage.getItem(CHAT_OPTION_KEY);
-        let globalChatOption: ChatOptions = chatOption === null ? defaultChatOptions : JSON.parse(chatOption);
+        // 当前AI回复的信息
+        let currAssistantMessage: string = "";
+        // 是否正在对话
+        let chatting = false;
 
-        let systemPrompt: string | null = localStorage.getItem(SYSTEM_PROMPT_KEY)
-        let globalSystemPrompt: string = systemPrompt === null ? defaultSystemPrompt : systemPrompt
+        // 尝试从本地获取配置信息
+        let messagesJson: string | null = localStorage.getItem(MESSAGE_LOCAL_STORE);
 
-        return {
-            globalChatOption,
-            globalSystemPrompt,
-        };
+        //全部信息
+        let globalMessages: Message[] =
+            messagesJson === null ? defaultMessage : JSON.parse(messagesJson);
+
+        return {globalMessages, currAssistantMessage, chatting};
     },
+
     getters: {
-        getGlobalChatOption(): ChatOptions {
-            return this.globalChatOption;
+        isChatting(): boolean {
+            return this.chatting;
         },
-        getGlobalSystemPrompt(): string {
-            return this.globalSystemPrompt;
+        getGlobalMessages(): Message[] {
+            return this.globalMessages;
         },
     },
+
     actions: {
-        setGlobalChatOption(globalChatOption: ChatOptions) {
-            this.$patch({globalChatOption})
-            localStorage.setItem(CHAT_OPTION_KEY, JSON.stringify(globalChatOption));
-
+        setChatting(chatting: boolean) {
+            this.$patch({chatting});
         },
-        setGlobalSystemPrompt(globalSystemPrompt: string) {
-            this.$patch({globalSystemPrompt});
-            localStorage.setItem(SYSTEM_PROMPT_KEY, globalSystemPrompt);
 
+        setGlobalMessage(globalMessages: Message[]) {
+            this.$patch({globalMessages});
         },
-    },
+
+        addMessage(message: Message) {
+            this.globalMessages.push(message);
+            this.storeMessage();
+        },
+
+        resetGlobalMessage() {
+            localStorage.removeItem(MESSAGE_LOCAL_STORE);
+            this.globalMessages = [];
+            this.addMessage(defaultMessage.at(0) as Message);
+            console.log(this.globalMessages);
+        },
+
+        storeMessage() {
+            localStorage.setItem(MESSAGE_LOCAL_STORE, JSON.stringify(this.getGlobalMessages));
+        },
+    }
 })

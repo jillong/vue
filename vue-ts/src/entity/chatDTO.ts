@@ -32,3 +32,8 @@ export interface UpdateChatApiDto {
     apiKey: string;
     description: string;
 }
+
+export interface Message {
+    role: string;
+    content: string;
+}

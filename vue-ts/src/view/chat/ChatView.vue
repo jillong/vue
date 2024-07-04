@@ -4,13 +4,17 @@
         ref="myScrollbar"
         always
     >
-      <div ref="innerElement">
-        <div class="card-header">
-          <el-image
-              :src="User"
-              style="width: 50px; margin-right: 20px"
-          />
-        </div>
+      <div v-highlight ref="innerElement">
+        <el-card v-for="(item, index) in messageList" class="scrollbar-item">
+          <div class="card-header" v-if="item.role === 'system'">
+            <el-image :src="User" style="width: 50px; margin-right: 20px"/>
+            <span style="font-size: large; font-weight: 800">系统设置</span>
+          </div>
+          <div style="margin: 10px">
+            <MDView v-if="item.content !== ''" :content="item.content"/>
+            <div v-else>AI思考中...</div>
+          </div>
+        </el-card>
       </div>
     </el-scrollbar>
 
@@ -25,20 +29,10 @@
           class="input-box"
       />
       <div style="display: flex; justify-content: right; margin: 10px">
-        <el-button
-            type="primary"
-            @click="sendPostRequest"
-        >
-          发送
-        </el-button>
+        <el-button type="primary" @click="submitChat">发送</el-button>
+        <el-button type="warning" @click="cleanMessage">删除对话</el-button>
       </div>
     </div>
-  </div>
-  <div v-if="response">
-    <div
-        v-highlight
-        v-html="renderedMarkdown"
-    />
   </div>
 
   <div v-if="error">
@@ -49,48 +43,55 @@
 
 <script setup lang="ts">
 import {computed, ref} from 'vue';
-import {marked} from 'marked';
-import axios from 'axios';
 import User from "../../assets/user.svg";
-import {ElScrollbar} from "element-plus";
+import {ElMessage, ElScrollbar} from "element-plus";
+import {sendChatRequest, sendMessageChat} from "@/api/ChatApi";
+import {chatMessagesStore} from "@/store/message";
+import MDView from "@/components/MDView.vue";
 
 const innerElement = ref<HTMLElement>();
 const myScrollbar = ref<InstanceType<typeof ElScrollbar>>();
-const renderedMarkdown = computed(() => {
-  return marked(response.value || "");
-});
 
 const userQuery = ref(''); // 用户输入的查询内容
 const response = ref(null);
 const error = ref(null);
+const chatMessages = chatMessagesStore();
+const messageList = computed(() => {
+  return chatMessages.globalMessages;
+});
 
-const sendPostRequest = async () => {
-  const url = 'http://localhost:8090/ai/chat';
-  const data = {
-    chatOptions: {
-      stream: false,
-      augmented: false,
-    },
-    messages: [{
-      role: 'user',
-      content: '使用中文回答',
-    }],
-    query: userQuery.value,
-  };
-
-  try {
-    const res = await axios.post(url, data, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    response.value = res.data;
-    error.value = null;
-  } catch (error: any) {
-    error.value = error.message;
-    response.value = null;
-  }
+const cleanMessage = () => {
+  chatMessages.resetGlobalMessage();
 };
+const submitChatStream = () => {
+  if (userQuery.value === "") {
+    ElMessage({
+      type: "error",
+      message: "请输入内容",
+    });
+  } else {
+    chatMessages.setChatting(true);
+    sendMessageChat(userQuery.value);
+    userQuery.value = "";
+  }
+
+};
+const submitChat = async () => {
+  if (userQuery.value === "") {
+    ElMessage({
+      type: "error",
+      message: "请输入内容",
+    });
+  } else {
+    chatMessages.setChatting(true);
+    const res = await sendChatRequest(userQuery);
+    chatMessages.addMessage({
+      role: "assistant",
+      content: res.data,
+    });
+    userQuery.value = "";
+  }
+}
 
 </script>
 
