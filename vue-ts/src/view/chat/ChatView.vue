@@ -103,7 +103,22 @@ const submitChat = async () => {
   display: flex;
   flex-direction: column; /* 垂直方向排列 */
   height: 100%;
+}
+
+.el-scrollbar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 0 20%; /* 为整个容器增加左右留白 */
+}
+
+.el-scrollbar__wrap {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.el-scrollbar__view {
+  padding-right: 5%; /* 确保内容区域有右侧留白 */
 }
 
 .chat-footer {
@@ -138,15 +153,14 @@ const submitChat = async () => {
   padding: 10px;
   border-radius: 10px;
   display: flex;
-  justify-content: flex-end; /* 使消息框靠右对齐 */
 }
 
 .scrollbar-item.assistant {
-  justify-content: flex-start; /* 使 assistant 消息框靠左对齐 */
+  justify-content: flex-start; /* assistant 消息框靠左对齐 */
 }
 
 .scrollbar-item.user {
-  justify-content: flex-end; /* 使 user 消息框靠右对齐 */
+  justify-content: flex-end; /* user 消息框靠右对齐 */
 }
 
 .card-content {
