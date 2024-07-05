@@ -1,22 +1,30 @@
 <template>
   <div id="basic-aside">
     <el-scrollbar ref="myScrollbar" always>
-      <div v-highlight ref="innerElement">
-        <div
-            v-for="(item, index) in messageList"
-            :key="index"
-            :class="['scrollbar-item', item.role]"
-        >
-          <div class="card-content">
-            <div class="card-header" v-if="item.role === 'system'">
-              <el-image :src="User" style="width: 50px; margin-right: 20px" />
-              <span style="font-size: large; font-weight: 800">系统设置</span>
-            </div>
-            <div v-else class="message-content">
+      <div class="content-container" v-highlight ref="innerElement">
+        <div class="messages">
+          <div
+              v-for="(item, index) in messageList"
+              :key="index"
+              :class="['scrollbar-item', item.role]"
+          >
+            <div class="card-content" v-if="item.role !== 'system'">
               <MDView v-if="item.content !== ''" :content="item.content" />
               <div v-else>AI思考中...</div>
             </div>
           </div>
+        </div>
+        <div class="system-settings" v-if="systemMessage">
+          <div class="card-header">
+            <el-image :src="User" style="width: 50px; margin-right: 20px" />
+            <span style="font-size: large; font-weight: 800">系统设置</span>
+          </div>
+          <el-input
+              v-model="systemMessage.content"
+              type="textarea"
+              placeholder="系统设置"
+              class="system-input"
+          />
         </div>
       </div>
     </el-scrollbar>
@@ -59,9 +67,9 @@ const userQuery = ref(''); // 用户输入的查询内容
 const response = ref(null);
 const error = ref(null);
 const chatMessages = chatMessagesStore();
-const messageList = computed(() => {
-  return chatMessages.globalMessages;
-});
+const messageList = computed(() => chatMessages.globalMessages);
+
+const systemMessage = computed(() => messageList.value.find(msg => msg.role === 'system'));
 
 const cleanMessage = () => {
   chatMessages.resetGlobalMessage();
@@ -96,6 +104,7 @@ const submitChat = async () => {
     userQuery.value = "";
   }
 };
+
 </script>
 
 <style>
@@ -118,7 +127,29 @@ const submitChat = async () => {
 }
 
 .el-scrollbar__view {
-  padding-right: 5%; /* 确保内容区域有右侧留白 */
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.messages {
+  flex: 1;
+}
+
+.system-settings {
+  width: 20%; /* 设置系统设置部分宽度 */
+  padding-left: 10px;
+}
+
+.system-input {
+  width: 100%;
+  height: 100%;
 }
 
 .chat-footer {
