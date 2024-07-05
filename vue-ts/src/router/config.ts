@@ -1,4 +1,4 @@
-import {ChatDotRound, Key, Setting} from "@element-plus/icons-vue";
+import {ChatDotRound, Key, Collection} from "@element-plus/icons-vue";
 
 let routes = [
 
@@ -23,13 +23,13 @@ let routes = [
         },
     },
     {
-        path: "/setting",
-        name: "setting",
-        component: () => import("../view/chat/SettingView.vue"),
+        path: "/know",
+        name: "know",
+        component: () => import("../view/know/PrivateKnowledgeView.vue"),
         meta: {
             isMenu: true,
-            description: "设置",
-            icon: Setting,
+            description: "私人知识库",
+            icon: Collection,
         },
     },
 ];
