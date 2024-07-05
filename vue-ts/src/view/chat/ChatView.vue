@@ -28,19 +28,21 @@
           class="system-input"
       />
     </div>
-    <div class="chat-footer">
-      <el-input
-          v-model="userQuery"
-          type="textarea"
-          autofocus
-          :autosize="{ minRows: 1, maxRows: 4 }"
-          resize="none"
-          placeholder="请输入对话内容，发送请使用Shift+Enter"
-          class="input-box"
-      />
-      <div class="button-group">
-        <el-button type="primary" @click="submitChat">发送</el-button>
-        <el-button type="warning" @click="cleanMessage">删除对话</el-button>
+    <div class="chat-footer-container">
+      <div class="chat-footer">
+        <el-input
+            v-model="userQuery"
+            type="textarea"
+            autofocus
+            :autosize="{ minRows: 1, maxRows: 4 }"
+            resize="none"
+            placeholder="请输入对话内容，发送请使用Shift+Enter"
+            class="input-box chat-input"
+        />
+        <div class="button-group">
+          <el-button type="primary" @click="submitChat">发送</el-button>
+          <el-button type="warning" @click="cleanMessage">删除对话</el-button>
+        </div>
       </div>
     </div>
   </div>
@@ -156,18 +158,34 @@ const submitChat = async () => {
   height: 100%;
 }
 
+.chat-footer-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  background-color: transparent;
+}
+
 .chat-footer {
+  width: 70%;
   display: flex;
   align-items: center;
-  width: 100%;
-  border-top: 2px solid #cecccc;
-  padding: 10px;
-  background-color: transparent;
+  padding-left: 0;
+  padding-right: 0;
+  border-top: none; /* 移除顶部边框 */
+}
+
+.chat-input {
+  width: 70%;
+  display: flex;
+  align-items: center;
+  padding-left: 0;
 }
 
 .input-box {
   flex: 1;
   margin-right: 10px;
+  background-color: #672626; /* 设置文本输入框背景颜色 */
+  color: #333333; /* 设置文本输入框文字颜色 */
 }
 
 .button-group {
