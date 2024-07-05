@@ -40,6 +40,9 @@
             class="input-box chat-input"
         />
         <div class="button-group">
+          <el-button :type="augmented ? 'success' : 'info'" @click="toggleAugmented">
+            {{ augmented ? '增强' : '未增强' }}
+          </el-button>
           <el-button type="primary" @click="submitChat">发送</el-button>
           <el-button type="warning" @click="cleanMessage">删除对话</el-button>
         </div>
@@ -55,6 +58,7 @@ import { ElMessage, ElScrollbar } from "element-plus";
 import { sendChatRequest, sendMessageChat } from "@/api/ChatApi";
 import { chatMessagesStore } from "@/store/message";
 import MDView from "@/components/MDView.vue";
+import {chatOptionsStore} from "@/store/options";
 
 const innerElement = ref<HTMLElement>();
 const myScrollbar = ref<InstanceType<typeof ElScrollbar>>();
@@ -63,10 +67,14 @@ const userQuery = ref(''); // 用户输入的查询内容
 const response = ref(null);
 const error = ref(null);
 const chatMessages = chatMessagesStore();
+const chatOptions = chatOptionsStore();
+const globalChatOption =chatOptions.getGlobalChatOption;
 const messageList = computed(() => chatMessages.globalMessages);
-
+const augmented = ref(false);
 const systemMessage = computed(() => messageList.value.find(msg => msg.role === 'system'));
-
+const toggleAugmented = () => {
+  augmented.value = !augmented.value;
+};
 const cleanMessage = () => {
   chatMessages.resetGlobalMessage();
 };
@@ -92,6 +100,8 @@ const submitChat = async () => {
     });
   } else {
     chatMessages.setChatting(true);
+    globalChatOption.augmented = augmented.value;
+    chatOptions.setGlobalChatOption(globalChatOption);
     const res = await sendChatRequest(userQuery);
     chatMessages.addMessage({
       role: "assistant",
