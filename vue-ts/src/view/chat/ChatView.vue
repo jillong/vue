@@ -14,21 +14,20 @@
             </div>
           </div>
         </div>
-        <div class="system-settings" v-if="systemMessage">
-          <div class="card-header">
-            <el-image :src="User" style="width: 50px; margin-right: 20px" />
-            <span style="font-size: large; font-weight: 800">系统设置</span>
-          </div>
-          <el-input
-              v-model="systemMessage.content"
-              type="textarea"
-              placeholder="系统设置"
-              class="system-input"
-          />
-        </div>
       </div>
     </el-scrollbar>
-
+    <div class="system-settings" v-if="systemMessage">
+      <div class="card-header">
+        <el-image :src="User" style="width: 50px; margin-right: 20px" />
+        <span style="font-size: large; font-weight: 800">系统设置</span>
+      </div>
+      <el-input
+          v-model="systemMessage.content"
+          type="textarea"
+          placeholder="系统设置"
+          class="system-input"
+      />
+    </div>
     <div class="chat-footer">
       <el-input
           v-model="userQuery"
@@ -44,11 +43,6 @@
         <el-button type="warning" @click="cleanMessage">删除对话</el-button>
       </div>
     </div>
-  </div>
-
-  <div v-if="error">
-    <h3>错误:</h3>
-    <pre>{{ error }}</pre>
   </div>
 </template>
 
@@ -112,6 +106,7 @@ const submitChat = async () => {
   display: flex;
   flex-direction: column; /* 垂直方向排列 */
   height: 100%;
+  position: relative;
 }
 
 .el-scrollbar {
@@ -135,20 +130,27 @@ const submitChat = async () => {
 .content-container {
   display: flex;
   flex-direction: row;
-  width: 100%;
+  width: 74%;
 }
 
 .messages {
   flex: 1;
-  padding-left: 15%;
+  padding-left: 20%;
 }
 
 .system-settings {
-  width: 30%; /* 设置系统设置部分宽度 */
-  padding-right: 10px;
-  padding-left: 10px;
+  position: fixed;
+  right: 2%;
+  left: 77%;
+  top: 3%;
+  bottom: 8%;
+  width: 20%; /* 设置系统设置部分宽度 */
+  padding: 10px;
+  background-color: #ffffff; /* 设置背景颜色 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
 .system-input {
   width: 100%;
   height: 100%;
@@ -216,6 +218,5 @@ const submitChat = async () => {
   background-color: #fff2e8; /* 设置 user 消息框背景色 */
   text-align: right;
 }
-
 
 </style>
