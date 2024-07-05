@@ -118,7 +118,7 @@ const submitChat = async () => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 0 20%; /* 为整个容器增加左右留白 */
+
 }
 
 .el-scrollbar__wrap {
@@ -140,10 +140,12 @@ const submitChat = async () => {
 
 .messages {
   flex: 1;
+  padding-left: 15%;
 }
 
 .system-settings {
-  width: 20%; /* 设置系统设置部分宽度 */
+  width: 30%; /* 设置系统设置部分宽度 */
+  padding-right: 10px;
   padding-left: 10px;
 }
 
