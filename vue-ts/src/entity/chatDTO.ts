@@ -37,3 +37,18 @@ export interface Message {
     role: string;
     content: string;
 }
+
+export interface QueryFileDto {
+    page: number;
+    pageSize: number;
+    fileName: string | undefined;
+}
+
+export interface StoreFile {
+    id: number;
+    url: string;
+    fileName: string;
+    vectorId: string[];
+    createTime: Date;
+    updateTime: Date;
+}

@@ -1,4 +1,5 @@
 <template>
+  <!-- TODO 添加文件时，滑轮自动往下拉。最好实现文件拖拉框和 el-table在一起-->
   <el-upload
       class="upload-demo"
       multiple
@@ -27,18 +28,69 @@
       </el-table-column>
     </el-table>
   </div>
+
+  <el-form
+      style="display: flex; justify-content: space-between"
+      :model="queryFileDto"
+  >
+    <el-form-item label="文件名:">
+      <el-input placeholder="请输入文件名称" v-model="queryFileDto.fileName"/>
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" @click="loadStoreFileData" :disabled="isLoading">搜索</el-button>
+    </el-form-item>
+  </el-form>
+
+  <el-table :data="storeFileData" border v-loading="isLoading">
+    <el-table-column prop="id" label="ID" width="180" />
+    <el-table-column prop="fileName" label="文件名" width="180" />
+    <el-table-column label="上传时间">
+      <template #default="scope">
+      </template>
+    </el-table-column>
+    <el-table-column label="更新时间">
+      <template #default="scope">
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" width="150">
+      <template #default="scope">
+        <el-button
+            type="danger"
+            size="small"
+        >删除</el-button
+        >
+        <el-button
+            type="primary"
+            size="small"
+        >预览</el-button
+        >
+      </template>
+    </el-table-column>
+  </el-table>
 </template>
 
 <script setup lang="ts">
 import {ref} from "vue";
 import {UploadUserFile} from "element-plus";
+import {QueryFileDto, StoreFile} from "@/entity/chatDTO";
 
 const fileList = ref<UploadUserFile[]>([]);
 const uploading = ref(false);
-
+const isLoading = ref(false);
+const storeFileData = ref<StoreFile[]>([]);
 const deleteFile = (index: number) => {
   fileList.value.splice(index, 1);
 };
+
+const loadStoreFileData = () => {
+  isLoading.value = true;
+};
+const queryFileDto = ref<QueryFileDto>({
+  page: 0,
+  pageSize: 10,
+  fileName: "",
+});
+
 </script>
 
 <style scoped>
@@ -54,16 +106,11 @@ const deleteFile = (index: number) => {
 }
 
 .file-list-container {
-  width: 98%;
+  width: 100%;
   max-height: 30%; /* 设置最大高度 */
   overflow-y: auto; /* 垂直滚动条 */
   padding-top: 10px; /* 顶层边距 */
-}
-
-.empty-list {
-  text-align: center;
-  padding: 20px;
-  color: #999;
+  padding-bottom: 30px; /* 顶层边距 */
 }
 
 /* 设置表格的虚线边框 */
