@@ -5,6 +5,7 @@
       v-model:file-list="fileList"
       :auto-upload="false"
       v-loading="uploading"
+      :show-file-list="false"
   >
     <el-tooltip content="文件支持 pdf、doc、md、excel、text 等">
       <el-button class="upload-button" type="primary">上传文件</el-button>
@@ -12,12 +13,11 @@
   </el-upload>
   <div class="file-list-container">
     <el-table
-        v-show="fileList.length > 0"
         :data="fileList"
         border
         stripe
         style="width: 100%;"
-        height="400"
+        height="250"
     >
       <el-table-column label="文件名" prop="name"></el-table-column>
       <el-table-column label="操作">
@@ -26,9 +26,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="empty-list" v-show="fileList.length === 0">
-      暂无文件上传
-    </div>
   </div>
 </template>
 
@@ -58,10 +55,9 @@ const deleteFile = (index: number) => {
 
 .file-list-container {
   width: 98%;
-  max-height: 40%; /* 设置最大高度 */
+  max-height: 30%; /* 设置最大高度 */
   overflow-y: auto; /* 垂直滚动条 */
-  border: 1px dashed #ccc; /* 外层虚框 */
-  padding: 10px; /* 外层边距 */
+  padding-top: 10px; /* 顶层边距 */
 }
 
 .empty-list {
