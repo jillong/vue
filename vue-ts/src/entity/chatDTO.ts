@@ -41,7 +41,7 @@ export interface Message {
 export interface QueryFileDto {
     page: number;
     pageSize: number;
-    fileName: string | undefined;
+    filter: string | undefined;
 }
 
 export interface StoreFile {
