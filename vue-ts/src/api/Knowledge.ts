@@ -13,3 +13,7 @@ export const uploadFileApi = async (filesList: File[]): Promise<any> => {
 export const queryFileApi = async (params: QueryFileDto): Promise<any> => {
     return axios.get("http://localhost:8090/know", {params})
 }
+
+export const deleteFileApi = async (id: string): Promise<any> => {
+    return axios.delete(`http://localhost:8090/know/${id}`)
+}
