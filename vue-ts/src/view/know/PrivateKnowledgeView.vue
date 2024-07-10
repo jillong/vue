@@ -62,7 +62,7 @@
     <el-table-column label="操作" width="150">
       <template #default="scope">
         <el-button type="danger" size="small" @click="deleteStoreFileWithConfirm(scope.row.id)">删除</el-button>
-        <el-button type="primary" size="small">预览</el-button>
+        <el-button type="primary" size="small" @click="openFilePreview(scope.row.url)">预览</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -102,12 +102,12 @@ const deleteStoreFile = async (id: any) => {
         if (status == 200) {
           ElMessage({
             type: "success",
-            message: res.data,
+            message: res.data.message,
           });
         } else {
           ElMessage({
             type: "error",
-            message: res.message,
+            message: res.data.message,
           });
         }
       })
@@ -145,7 +145,7 @@ const getFileData = () => {
           // 接口异常
           ElMessage({
             type: "error",
-            message: res.message,
+            message: res.data.message,
           });
         }
       })
@@ -158,6 +158,9 @@ const getFileData = () => {
       .finally(() => {
         isLoading.value = false;
       });
+};
+const openFilePreview = (url: string) => {
+  window.open(url, "_blank");
 };
 
 onMounted(() => {
